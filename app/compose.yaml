@@ -1,0 +1,18 @@
+# Development database only. Spring Boot starts it automatically when the app runs
+# (spring-boot-docker-compose) and stops it on shutdown; data survives in the volume.
+name: job-tracker
+
+services:
+  postgres:
+    image: 'postgres:18-alpine'
+    environment:
+      - 'POSTGRES_DB=jobtracker'
+      - 'POSTGRES_USER=jobtracker'
+      - 'POSTGRES_PASSWORD=jobtracker'
+    ports:
+      - '5432'
+    volumes:
+      - 'postgres-data:/var/lib/postgresql'
+
+volumes:
+  postgres-data:

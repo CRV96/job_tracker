@@ -1,0 +1,17 @@
+   ___       _       _____              _             
+  |_  |     | |     |_   _|            | |            
+    | | ___ | |__     | |_ __ __ _  ___| | _____ _ __ 
+    | |/ _ \| '_ \    | | '__/ _` |/ __| |/ / _ \ '__|
+/\__/ / (_) | |_) |   | | | | (_| | (__|   <  __/ |   
+\____/ \___/|_.__/    \_/_|  \__,_|\___|_|\_\___|_|   
+                                                      
+                                                      
+${application.title} ${application.version}
+Powered by Spring Boot ${spring-boot.version}
+
+Repository: https://github.com/CRV96/job_tracker
+
+Author
+Developer by Robert - Vasile Ciapa
+Github: https://github.com/CRV96
+Linkedin: https://www.linkedin.com/in/robert-vasile-ciapa-05a68613b/

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<!--/* Rendered by Spring Boot for every error on a page (404, 500, ...). It provides ${status} and ${error}. */-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: page(~{::title}, ~{::main})}">
+<head>
+    <title>Error · Job Tracker</title>
+</head>
+<body>
+<main>
+    <p class="text-sm font-semibold text-gray-500" th:text="${status}">500</p>
+    <h1 class="mt-1 text-2xl font-semibold"
+        th:text="${status == 404} ? 'Page not found' : 'Something went wrong'">Something went wrong</h1>
+    <p class="mt-4">
+        <a class="text-gray-600 underline hover:text-gray-900" th:href="@{/applications}">Back to your applications</a>
+    </p>
+</main>
+</body>
+</html>

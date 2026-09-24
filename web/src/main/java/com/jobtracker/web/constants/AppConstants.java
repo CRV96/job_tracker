@@ -6,7 +6,7 @@ public final class AppConstants {
         // Private constructor to prevent instantiation
     }
 
-    public final class ControllerConstants {
+    public static final class ControllerConstants {
         public static final String HOMEPAGE = "/";
         public static final String APPLICATIONS = "/applications";
         public static final String PROFILES = "/profiles";

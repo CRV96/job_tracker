@@ -36,20 +36,21 @@ class DefaultApplicationService implements ApplicationService {
 
 	@Override
 	public List<ApplicationSummary> findAll(long userId, @Nullable ApplicationStatus status) {
-		// TODO: newest first, filtered by status when one is given
+		// TODO: newest first, filtered by status when one is given; map with ApplicationMapper.toApplicationSummary
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
 	@Override
 	public Optional<ApplicationDetails> findById(long userId, long applicationId) {
-		// TODO: map the entity and its events to ApplicationDetails
+		// TODO: find it for this user and map it with ApplicationMapper.toApplicationDetails
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
 	@Override
 	@Transactional
 	public void addEvent(long userId, long applicationId, NewTimelineEvent event) {
-		// TODO: reject a rejection reason on non-REJECTED events, add the event, and update
+		// TODO: throw ApplicationNotFoundException if the user has no such application; reject a rejection
+		//  reason on non-REJECTED events; add the event, and update
 		//  the application's current status if this is now its latest event
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
@@ -57,7 +58,8 @@ class DefaultApplicationService implements ApplicationService {
 	@Override
 	@Transactional
 	public void delete(long userId, long applicationId) {
-		// TODO: delete the application if it belongs to the user (its events go with it)
+		// TODO: delete the application if it belongs to the user (its events go with it),
+		//  otherwise throw ApplicationNotFoundException
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 

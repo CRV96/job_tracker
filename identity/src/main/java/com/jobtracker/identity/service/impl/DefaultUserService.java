@@ -23,7 +23,7 @@ class DefaultUserService implements UserService {
 	@Override
 	@Transactional
 	public User create(String name) {
-		// TODO: save a new UserEntity and return it as a User
+		// TODO: save a new UserEntity and return it via UserMapper.toUser
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 
@@ -35,7 +35,7 @@ class DefaultUserService implements UserService {
 
 	@Override
 	public Optional<User> findById(long id) {
-		// TODO: look up the profile and map it to a User
+		// TODO: look up the profile and map it with UserMapper.toUser
 		throw new UnsupportedOperationException("Not implemented yet");
 	}
 

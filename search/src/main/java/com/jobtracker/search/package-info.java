@@ -1,0 +1,7 @@
+/**
+ * Search: generates Boolean job-search query strings for Google, LinkedIn and similar sites.
+ * Stateless, no database, no dependencies on other modules.
+ * <p>
+ * Public API: the types in this package. Sub-packages are internal to the module.
+ */
+package com.jobtracker.search;

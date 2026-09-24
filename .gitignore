@@ -1,0 +1,53 @@
+### Maven ###
+target/
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+HELP.md
+
+### Frontend build (Node is downloaded into app/target/) ###
+node_modules/
+
+### Browser extension ###
+# "Pack extension" in Chrome writes these next to the extension folder. The .pem is the
+# extension's private signing key and must never be published.
+*.pem
+*.crx
+
+### Secrets and local config ###
+.env
+.env.*
+!.env.example
+
+### Logs ###
+*.log
+logs/
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+out/
+
+### Eclipse / STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### VS Code ###
+.vscode/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+
+### OS files ###
+.DS_Store
+Thumbs.db

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: page(~{::title}, ~{::main})}">
+<head>
+    <title>Application · Job Tracker</title>
+</head>
+<body>
+<main>
+    <!--/* TODO: header with the captured job data, the current status and quick status-change buttons.
+               Choosing "Rejected" should ask for the rejection reason right away. */-->
+    <h1 class="text-2xl font-semibold">Application</h1>
+
+    <section class="mt-8">
+        <h2 class="text-lg font-semibold">Timeline</h2>
+
+        <div id="timeline" th:fragment="timeline">
+            <!--/* TODO: the application's events in date order: date, stage label, note, rejection reason */-->
+        </div>
+
+        <!--/* HTMX posts the form and swaps the #timeline element with the fragment the controller returns. */-->
+        <form class="mt-6 grid max-w-xl gap-3"
+              th:hx-post="@{/applications/{id}/events(id=${applicationId})}" hx-target="#timeline" hx-swap="outerHTML">
+            <input class="rounded border px-3 py-2" type="date" name="eventDate" required>
+            <select class="rounded border px-3 py-2" name="stageCategory" required>
+                <option th:each="status : ${T(com.jobtracker.jobs.enums.ApplicationStatus).values()}"
+                        th:value="${status}" th:text="${status}">APPLIED</option>
+            </select>
+            <input class="rounded border px-3 py-2" type="text" name="stageLabel" placeholder="Stage, e.g. Technical interview">
+            <textarea class="rounded border px-3 py-2" name="note" rows="4" placeholder="What happened, what to remember"></textarea>
+            <button class="justify-self-start rounded bg-gray-900 px-4 py-2 text-white" type="submit">Add to timeline</button>
+        </form>
+    </section>
+</main>
+</body>
+</html>

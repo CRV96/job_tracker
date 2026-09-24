@@ -1,0 +1,5 @@
+/* Compiled by Tailwind at build time into target/classes/static/css/app.css (see package.json). */
+@import "tailwindcss" source(none);
+
+/* Scan the templates for the class names they use. */
+@source "../resources/templates/**/*.html";

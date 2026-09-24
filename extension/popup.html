@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Job Tracker</title>
+    <style>
+        body { width: 320px; margin: 0; padding: 16px; font: 14px system-ui, sans-serif; }
+        h1 { margin: 0 0 12px; font-size: 16px; }
+        dt { color: #6b7280; font-size: 12px; }
+        dd { margin: 0 0 8px; }
+        .actions { display: flex; gap: 8px; }
+        button { flex: 1; padding: 8px; cursor: pointer; }
+    </style>
+</head>
+<body>
+<h1>Job Tracker</h1>
+
+<dl id="preview">
+    <dt>Title</dt><dd id="title">-</dd>
+    <dt>Company</dt><dd id="company">-</dd>
+    <dt>Location</dt><dd id="location">-</dd>
+</dl>
+
+<div class="actions">
+    <button id="save" type="button">Save</button>
+    <button id="favorite" type="button">Favorite</button>
+</div>
+
+<p id="status" role="status"></p>
+
+<script type="module" src="popup.js"></script>
+</body>
+</html>

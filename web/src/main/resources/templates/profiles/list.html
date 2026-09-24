@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: page(~{::title}, ~{::main})}">
+<head>
+    <title>Profiles · Job Tracker</title>
+</head>
+<body>
+<main>
+    <h1 class="text-2xl font-semibold">Who's using Job Tracker?</h1>
+
+    <!--/* TODO: one button per profile that POSTs to /profiles/{id}/select */-->
+
+    <form class="mt-8 flex gap-2" method="post" th:action="@{/profiles}">
+        <input class="rounded border px-3 py-2" type="text" name="name" placeholder="New profile name" required>
+        <button class="rounded bg-gray-900 px-4 py-2 text-white" type="submit">Create profile</button>
+    </form>
+</main>
+</body>
+</html>

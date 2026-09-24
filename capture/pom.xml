@@ -14,7 +14,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.jobtracker</groupId>
-			<artifactId>job-tracker-applications</artifactId>
+			<artifactId>job-tracker-jobs</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>com.jobtracker</groupId>

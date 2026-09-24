@@ -33,9 +33,10 @@
 
 	<modules>
 		<module>identity</module>
-		<module>applications</module>
-		<module>capture</module>
+		<module>jobs</module>
 		<module>search</module>
+		<module>capture</module>
+		<module>web</module>
 		<module>app</module>
 	</modules>
 
@@ -55,7 +56,12 @@
 			</dependency>
 			<dependency>
 				<groupId>com.jobtracker</groupId>
-				<artifactId>job-tracker-applications</artifactId>
+				<artifactId>job-tracker-jobs</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.jobtracker</groupId>
+				<artifactId>job-tracker-search</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
@@ -65,7 +71,7 @@
 			</dependency>
 			<dependency>
 				<groupId>com.jobtracker</groupId>
-				<artifactId>job-tracker-search</artifactId>
+				<artifactId>job-tracker-web</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
@@ -77,5 +83,23 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+
+	<build>
+		<plugins>
+			<!-- Lombok runs as an annotation processor. Since JDK 23 processors must be listed explicitly. -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+						</path>
+					</annotationProcessorPaths>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 
 </project>

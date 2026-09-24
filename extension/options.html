@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Job Tracker options</title>
+    <style>
+        body { max-width: 420px; padding: 16px; font: 14px system-ui, sans-serif; }
+        label { display: block; margin-bottom: 12px; }
+        input { display: block; width: 100%; margin-top: 4px; padding: 6px; box-sizing: border-box; }
+    </style>
+</head>
+<body>
+<h1>Job Tracker options</h1>
+
+<form id="options">
+    <label>
+        Server URL
+        <input type="url" name="serverUrl" placeholder="http://localhost:8080" required>
+    </label>
+    <label>
+        Profile id
+        <input type="number" name="userId" min="1" required>
+    </label>
+    <button type="submit">Save</button>
+</form>
+
+<p id="status" role="status"></p>
+
+<script type="module" src="options.js"></script>
+</body>
+</html>

@@ -1,10 +1,14 @@
 package com.jobtracker.capture.enums;
 
 import com.jobtracker.jobs.enums.ApplicationStatus;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  * The button the user clicked in the extension popup.
  */
+@Getter
+@RequiredArgsConstructor
 public enum CaptureAction {
 
 	/** Already applied, or applying now: track it. */
@@ -14,13 +18,5 @@ public enum CaptureAction {
 	FAVORITE(ApplicationStatus.SAVED);
 
 	private final ApplicationStatus initialStatus;
-
-	CaptureAction(ApplicationStatus initialStatus) {
-		this.initialStatus = initialStatus;
-	}
-
-	ApplicationStatus initialStatus() {
-		return initialStatus;
-	}
 
 }

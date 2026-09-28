@@ -5,14 +5,14 @@ import com.jobtracker.jobs.dto.ApplicationSummary;
 import com.jobtracker.jobs.dto.TimelineEvent;
 import com.jobtracker.jobs.entity.ApplicationEntity;
 import com.jobtracker.jobs.entity.TimelineEventEntity;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  * Converts entities to the records the service returns. Entities never leave the module.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ApplicationMapper {
-
-	private ApplicationMapper() {
-	}
 
 	public static ApplicationSummary toApplicationSummary(ApplicationEntity application) {
 		return new ApplicationSummary(application.getId(), application.getTitle(), application.getCompany(),

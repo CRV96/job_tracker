@@ -6,6 +6,7 @@ import com.jobtracker.web.constants.AppConstants;
 import com.jobtracker.web.user.CurrentUser;
 import com.jobtracker.web.dto.NewEventForm;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -20,16 +21,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping(AppConstants.ControllerConstants.APPLICATIONS)
+@RequiredArgsConstructor
 class ApplicationController extends BaseController {
 
 	private final ApplicationService applications;
 
 	private final CurrentUser currentUser;
 
-	ApplicationController(ApplicationService applications, CurrentUser currentUser) {
-		this.applications = applications;
-		this.currentUser = currentUser;
-	}
 
 	@GetMapping
 	String list(@RequestParam(required = false) ApplicationStatus status, Model model) {

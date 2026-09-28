@@ -10,7 +10,7 @@ import com.jobtracker.jobs.dto.NewTimelineEvent;
 import com.jobtracker.jobs.enums.ApplicationStatus;
 import com.jobtracker.jobs.repository.ApplicationRepository;
 import com.jobtracker.jobs.service.ApplicationService;
-import com.jobtracker.jobs.service.ApplicationService;
+import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.Nullable;
 
 import org.springframework.stereotype.Service;
@@ -18,13 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 class DefaultApplicationService implements ApplicationService {
 
 	private final ApplicationRepository applications;
-
-	DefaultApplicationService(ApplicationRepository applications) {
-		this.applications = applications;
-	}
 
 	@Override
 	@Transactional

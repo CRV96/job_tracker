@@ -4,21 +4,19 @@ import java.util.List;
 import java.util.Optional;
 
 import com.jobtracker.identity.dto.User;
-
 import com.jobtracker.identity.repository.UserRepository;
 import com.jobtracker.identity.service.UserService;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 class DefaultUserService implements UserService {
 
 	private final UserRepository users;
-
-	DefaultUserService(UserRepository users) {
-		this.users = users;
-	}
 
 	@Override
 	@Transactional

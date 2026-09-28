@@ -5,6 +5,7 @@ import com.jobtracker.web.constants.AppConstants;
 import com.jobtracker.web.user.CurrentUser;
 import com.jobtracker.web.dto.NewProfileForm;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,16 +17,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping(AppConstants.ControllerConstants.PROFILES)
+@RequiredArgsConstructor
 class ProfileController extends BaseController {
 
 	private final UserService users;
 
 	private final CurrentUser currentUser;
 
-	ProfileController(UserService users, CurrentUser currentUser) {
-		this.users = users;
-		this.currentUser = currentUser;
-	}
 
 	@GetMapping
 	String list(Model model) {

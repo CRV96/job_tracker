@@ -5,6 +5,7 @@ import java.util.Optional;
 import com.jobtracker.identity.dto.User;
 import com.jobtracker.identity.service.UserService;
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Component;
 
@@ -13,16 +14,12 @@ import org.springframework.stereotype.Component;
  * so the selected profile's id is simply kept in the HTTP session.
  */
 @Component
+@RequiredArgsConstructor
 public class CurrentUser {
 
 	private final HttpSession session;
 
 	private final UserService users;
-
-	CurrentUser(HttpSession session, UserService users) {
-		this.session = session;
-		this.users = users;
-	}
 
 	public Optional<User> get() {
 		// TODO: read the profile id stored in the session and look it up with UserService

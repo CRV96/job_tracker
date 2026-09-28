@@ -1,11 +1,24 @@
 package com.jobtracker.web.controller;
 
-import com.jobtracker.jobs.service.ApplicationService;
+import java.time.LocalDate;
+import java.util.Map;
+
+import com.jobtracker.common.exception.BusinessRuleException;
+import com.jobtracker.identity.dto.User;
 import com.jobtracker.jobs.enums.ApplicationStatus;
-import com.jobtracker.web.constants.AppConstants;
-import com.jobtracker.web.user.CurrentUser;
+import com.jobtracker.jobs.enums.RejectionReason;
+import com.jobtracker.jobs.exception.ApplicationNotFoundException;
+import com.jobtracker.jobs.service.ApplicationService;
+import com.jobtracker.web.constants.AppConstants.ControllerConstants;
+import com.jobtracker.web.constants.AppConstants.HtmxHeaders;
+import com.jobtracker.web.constants.AppConstants.ModelAttributes;
+import com.jobtracker.web.constants.AppConstants.Views;
+import com.jobtracker.web.dto.NewApplicationForm;
 import com.jobtracker.web.dto.NewEventForm;
 import jakarta.validation.Valid;
+import lombok.CustomLog;
+import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -18,49 +31,113 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+/**
+ * Every page here needs a profile: {@link #requireProfile} sends the browser to the profile picker if none is
+ * selected. An application the profile doesn't own answers 404.
+ */
 @Controller
-@RequestMapping(AppConstants.ControllerConstants.APPLICATIONS)
+@RequestMapping(ControllerConstants.APPLICATIONS)
+@CustomLog
+@RequiredArgsConstructor
 class ApplicationController extends BaseController {
 
 	private final ApplicationService applications;
 
-	private final CurrentUser currentUser;
-
-	ApplicationController(ApplicationService applications, CurrentUser currentUser) {
-		this.applications = applications;
-		this.currentUser = currentUser;
+	@GetMapping
+	String list(@RequestParam(required = false) @Nullable ApplicationStatus status, Model model) {
+		User user = requireProfile(model);
+		model.addAttribute(ModelAttributes.APPLICATIONS, this.applications.findAll(user.id(), status));
+		model.addAttribute(ModelAttributes.STATUSES, ApplicationStatus.values());
+		model.addAttribute(ModelAttributes.SELECTED_STATUS, status);
+		return Views.APPLICATION_LIST;
 	}
 
-	@GetMapping
-	String list(@RequestParam(required = false) ApplicationStatus status, Model model) {
-		// TODO: redirect to /profiles if no profile is selected; otherwise add the
-		//  current profile's applications (filtered by status) to the model
-		return "applications/list";
+	@GetMapping("/new")
+	String newApplication(Model model) {
+		requireProfile(model);
+		return showNewApplicationForm(model, null, Map.of());
+	}
+
+	/**
+	 * Adds an application by hand. Invalid input shows the form again, with each error next to its field.
+	 */
+	@PostMapping
+	String create(@Valid NewApplicationForm form, BindingResult result, Model model) {
+		User user = requireProfile(model);
+		if (result.hasErrors()) {
+			Map<String, String> errors = fieldErrors(result);
+			log.debug("New application not added, fields with errors: {}", errors.keySet());
+			return showNewApplicationForm(model, form, errors);
+		}
+		long id = this.applications.create(form.toNewApplication(user.id()), form.statusDate());
+		return redirectTo(ControllerConstants.APPLICATIONS + "/" + id);
 	}
 
 	@GetMapping("/{id}")
 	String detail(@PathVariable long id, Model model) {
-		// TODO: add the application to the model, or respond 404 if the current profile doesn't own it
-		model.addAttribute("applicationId", id);
-		return "applications/detail";
+		addApplication(model, requireProfile(model).id(), id);
+		return Views.APPLICATION_DETAIL;
 	}
 
 	/**
-	 * Called by HTMX from the detail page. Returns only the timeline fragment, which HTMX swaps in place.
+	 * Called by HTMX from the detail page, both by the add-event form and the quick status buttons. Returns the page's
+	 * {@code application} fragment, which HTMX swaps in place, so the status and the timeline show the new event.
 	 */
 	@PostMapping("/{id}/events")
 	String addEvent(@PathVariable long id, @Valid NewEventForm form, BindingResult result, Model model) {
-		// TODO: add the event, put the refreshed application in the model and return "applications/detail :: timeline"
-		throw new UnsupportedOperationException("Not implemented yet");
+		long userId = requireProfile(model).id();
+		String error = result.hasErrors() ? errorMessage(result) : tryAddEvent(userId, id, form);
+		if (error != null) {
+			log.debug("Event not added to application {}: {}", id, error);
+		}
+		model.addAttribute(ModelAttributes.EVENT_ERROR, error);
+		addApplication(model, userId, id);
+		return Views.APPLICATION_DETAIL_FRAGMENT;
 	}
 
 	/**
-	 * Called by HTMX. Respond with an {@code HX-Redirect: /applications} header to send the browser back to the list.
+	 * Called by HTMX. The {@code HX-Redirect} header sends the browser back to the list.
 	 */
 	@DeleteMapping("/{id}")
-	ResponseEntity<Void> delete(@PathVariable long id) {
-		// TODO: delete the application and redirect via the HX-Redirect header
-		throw new UnsupportedOperationException("Not implemented yet");
+	ResponseEntity<Void> delete(@PathVariable long id, Model model) {
+		this.applications.delete(requireProfile(model).id(), id);
+		return ResponseEntity.noContent().header(HtmxHeaders.REDIRECT, ControllerConstants.APPLICATIONS).build();
+	}
+
+	/**
+	 * @return why the event wasn't added, or {@code null} if it was
+	 */
+	private @Nullable String tryAddEvent(long userId, long applicationId, NewEventForm form) {
+		try {
+			this.applications.addEvent(userId, applicationId, form.toNewTimelineEvent());
+			return null;
+		} catch (BusinessRuleException exception) {
+			return exception.getMessage();
+		}
+	}
+
+	private String showNewApplicationForm(Model model, @Nullable NewApplicationForm form,
+			Map<String, String> fieldErrors) {
+		model.addAttribute(ModelAttributes.FORM, form);
+		model.addAttribute(ModelAttributes.FIELD_ERRORS, fieldErrors);
+		addFormChoices(model);
+		return Views.NEW_APPLICATION;
+	}
+
+	private void addApplication(Model model, long userId, long applicationId) {
+		model.addAttribute(ModelAttributes.JOB_APPLICATION, this.applications.findById(userId, applicationId)
+			.orElseThrow(() -> new ApplicationNotFoundException(applicationId)));
+		addFormChoices(model);
+	}
+
+	/**
+	 * What the forms on the new-application and detail pages offer: statuses, rejection reasons, and today as the
+	 * default date.
+	 */
+	private static void addFormChoices(Model model) {
+		model.addAttribute(ModelAttributes.STATUSES, ApplicationStatus.values());
+		model.addAttribute(ModelAttributes.REJECTION_REASONS, RejectionReason.values());
+		model.addAttribute(ModelAttributes.TODAY, LocalDate.now());
 	}
 
 }

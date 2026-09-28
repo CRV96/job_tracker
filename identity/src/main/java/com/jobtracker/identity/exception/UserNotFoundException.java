@@ -1,9 +1,11 @@
 package com.jobtracker.identity.exception;
 
-public class UserNotFoundException extends RuntimeException {
+import com.jobtracker.common.exception.NotFoundException;
+
+public class UserNotFoundException extends NotFoundException {
 
 	public UserNotFoundException(long userId) {
-		super("Profile " + userId + " not found");
+		super(IdentityErrorCode.USER_NOT_FOUND, "Profile " + userId + " not found");
 	}
 
 }

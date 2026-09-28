@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<!--/* Small pieces shared by the application pages. */-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+
+<!--/* A status as a coloured badge. Tailwind only generates classes it finds written out in full, so each status
+       gets its own line instead of building the class name. */-->
+<th:block th:fragment="status-badge(status)" th:switch="${status.name()}">
+    <span th:case="'SAVED'" class="inline-block rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700">Saved</span>
+    <span th:case="'APPLIED'" class="inline-block rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">Applied</span>
+    <span th:case="'INTERVIEWING'" class="inline-block rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">Interviewing</span>
+    <span th:case="'OFFER'" class="inline-block rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">Offer</span>
+    <span th:case="'REJECTED'" class="inline-block rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">Rejected</span>
+    <span th:case="'WITHDRAWN'" class="inline-block rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-500">Withdrawn</span>
+</th:block>
+
+<!--/* An enum value as text: LACK_OF_EXPERIENCE becomes "Lack of experience". */-->
+<th:block th:fragment="label(value)"
+          th:text="${#strings.capitalize(#strings.toLowerCase(#strings.replace(value, '_', ' ')))}">Lack of experience</th:block>
+
+</body>
+</html>

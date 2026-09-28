@@ -1,10 +1,15 @@
 package com.jobtracker.web.controller;
 
+import com.jobtracker.common.exception.BusinessRuleException;
 import com.jobtracker.identity.service.UserService;
-import com.jobtracker.web.constants.AppConstants;
-import com.jobtracker.web.user.CurrentUser;
+import com.jobtracker.web.constants.AppConstants.ControllerConstants;
+import com.jobtracker.web.constants.AppConstants.ModelAttributes;
+import com.jobtracker.web.constants.AppConstants.Views;
 import com.jobtracker.web.dto.NewProfileForm;
 import jakarta.validation.Valid;
+import lombok.CustomLog;
+import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,35 +20,47 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping(AppConstants.ControllerConstants.PROFILES)
+@RequestMapping(ControllerConstants.PROFILES)
+@CustomLog
+@RequiredArgsConstructor
 class ProfileController extends BaseController {
 
 	private final UserService users;
 
-	private final CurrentUser currentUser;
-
-	ProfileController(UserService users, CurrentUser currentUser) {
-		this.users = users;
-		this.currentUser = currentUser;
-	}
-
 	@GetMapping
 	String list(Model model) {
-		// TODO: add all profiles to the model
-		return "profiles/list";
+		return showProfiles(model, null, null);
 	}
 
+	/**
+	 * Creates the profile and selects it. An invalid or taken name shows the page again, with the error.
+	 */
 	@PostMapping
-	String create(@Valid NewProfileForm form, BindingResult result) {
-		// TODO: on validation errors re-render the page; otherwise create the profile,
-		//  select it for this session and redirect to /applications
-		throw new UnsupportedOperationException("Not implemented yet");
+	String create(@Valid NewProfileForm form, BindingResult result, Model model) {
+		if (result.hasErrors()) {
+			log.debug("Profile not created: the name is blank or too long");
+			return showProfiles(model, form.name(), errorMessage(result));
+		}
+		try {
+			selectProfile(this.users.create(form.name()).id());
+		} catch (BusinessRuleException exception) {
+			log.debug("Profile not created: the name is taken");
+			return showProfiles(model, form.name(), exception.getMessage());
+		}
+		return redirectTo(ControllerConstants.APPLICATIONS);
 	}
 
 	@PostMapping("/{id}/select")
 	String select(@PathVariable long id) {
-		// TODO: select the profile for this session and redirect to /applications
-		throw new UnsupportedOperationException("Not implemented yet");
+		selectProfile(id);
+		return redirectTo(ControllerConstants.APPLICATIONS);
+	}
+
+	private String showProfiles(Model model, @Nullable String name, @Nullable String nameError) {
+		model.addAttribute(ModelAttributes.PROFILES, this.users.findAll());
+		model.addAttribute(ModelAttributes.NAME, name);
+		model.addAttribute(ModelAttributes.NAME_ERROR, nameError);
+		return Views.PROFILE_LIST;
 	}
 
 }

@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.List;
 
 import com.jobtracker.jobs.enums.ApplicationStatus;
+import lombok.Builder;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -11,12 +12,13 @@ import org.jspecify.annotations.Nullable;
  *
  * @param timeline events in date order, oldest first
  */
+@Builder
 public record ApplicationDetails(
 		long id,
 		String title,
 		@Nullable String company,
 		@Nullable String description,
-		String link,
+		@Nullable String link,
 		@Nullable String location,
 		@Nullable String salary,
 		@Nullable String employmentType,

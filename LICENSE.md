@@ -1,4 +1,4 @@
-Required Notice: Copyright 2026 Robert-Vasile Ciapă (https://github.com/CRV96/job_tracker)
+Required Notice: Copyright 2026 CRV (https://github.com/CRV96/job_tracker)
 
 Licensor Line of Business: Job Tracker, job application tracking software (https://github.com/CRV96/job_tracker)
 

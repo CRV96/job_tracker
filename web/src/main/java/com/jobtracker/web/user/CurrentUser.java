@@ -3,8 +3,11 @@ package com.jobtracker.web.user;
 import java.util.Optional;
 
 import com.jobtracker.identity.dto.User;
+import com.jobtracker.identity.exception.UserNotFoundException;
 import com.jobtracker.identity.service.UserService;
 import jakarta.servlet.http.HttpSession;
+import lombok.CustomLog;
+import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Component;
 
@@ -13,25 +16,42 @@ import org.springframework.stereotype.Component;
  * so the selected profile's id is simply kept in the HTTP session.
  */
 @Component
+@CustomLog
+@RequiredArgsConstructor
 public class CurrentUser {
 
+	private static final String SESSION_ATTRIBUTE = CurrentUser.class.getName() + ".userId";
+
+	// Spring injects a proxy that always uses the session of the request being handled
 	private final HttpSession session;
 
 	private final UserService users;
 
-	CurrentUser(HttpSession session, UserService users) {
-		this.session = session;
-		this.users = users;
-	}
-
+	/**
+	 * @return the selected profile, or empty if none is selected or it no longer exists
+	 */
 	public Optional<User> get() {
-		// TODO: read the profile id stored in the session and look it up with UserService
-		throw new UnsupportedOperationException("Not implemented yet");
+		if (!(this.session.getAttribute(SESSION_ATTRIBUTE) instanceof Long userId)) {
+			return Optional.empty();
+		}
+		Optional<User> user = this.users.findById(userId);
+		if (user.isEmpty()) {
+			// Gone since it was selected, e.g. the database was reset
+			log.debug("Selected profile {} no longer exists, forgetting it", userId);
+			this.session.removeAttribute(SESSION_ATTRIBUTE);
+		}
+		return user;
 	}
 
+	/**
+	 * @throws UserNotFoundException if there's no such profile
+	 */
 	public void select(long userId) {
-		// TODO: store the profile id in the session
-		throw new UnsupportedOperationException("Not implemented yet");
+		if (!this.users.exists(userId)) {
+			throw new UserNotFoundException(userId);
+		}
+		this.session.setAttribute(SESSION_ATTRIBUTE, userId);
+		log.debug("Profile {} selected for this browser session", userId);
 	}
 
 }

@@ -2,9 +2,11 @@ package com.jobtracker.jobs.entity;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.jobtracker.jobs.dto.NewApplication;
+import com.jobtracker.jobs.dto.NewTimelineEvent;
 import com.jobtracker.jobs.enums.ApplicationStatus;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -23,6 +25,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.type.SqlTypes;
+import org.jspecify.annotations.Nullable;
 
 @Entity
 @Table(name = "applications")
@@ -70,9 +73,10 @@ public class ApplicationEntity {
 
 	@OneToMany(mappedBy = "application", cascade = CascadeType.ALL, orphanRemoval = true)
 	@OrderBy("eventDate ASC, id ASC")
+	@Getter(AccessLevel.NONE)
 	private List<TimelineEventEntity> events = new ArrayList<>();
 
-	public ApplicationEntity(NewApplication application, Instant capturedAt) {
+	public ApplicationEntity(NewApplication application, @Nullable String source, Instant capturedAt) {
 		this.userId = application.userId();
 		this.title = application.title();
 		this.company = application.company();
@@ -81,10 +85,30 @@ public class ApplicationEntity {
 		this.location = application.location();
 		this.salary = application.salary();
 		this.employmentType = application.employmentType();
-		this.source = application.source();
+		this.source = source;
 		this.rawPayload = application.rawPayload();
 		this.currentStatus = application.initialStatus();
 		this.capturedAt = capturedAt;
+	}
+
+	/**
+	 * The timeline, oldest first. Read-only: events are added with {@link #addEvent}, which keeps the status in step.
+	 */
+	public List<TimelineEventEntity> getEvents() {
+		return Collections.unmodifiableList(this.events);
+	}
+
+	/**
+	 * Adds the event to the timeline. The status follows the latest event, so it changes unless the new event is
+	 * dated before one already on the timeline. On the same date, the event added last counts as the latest.
+	 */
+	public void addEvent(NewTimelineEvent event) {
+		boolean latest = this.events.stream()
+			.noneMatch(existing -> existing.getEventDate().isAfter(event.eventDate()));
+		this.events.add(new TimelineEventEntity(this, event));
+		if (latest) {
+			this.currentStatus = event.stageCategory();
+		}
 	}
 
 }

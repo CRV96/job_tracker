@@ -13,4 +13,9 @@ public interface UserService {
 
 	Optional<User> findById(long id);
 
+	/**
+	 * Cheaper than {@link #findById} when only existence matters.
+	 */
+	boolean exists(long id);
+
 }

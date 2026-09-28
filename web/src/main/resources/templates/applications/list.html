@@ -6,12 +6,50 @@
 </head>
 <body>
 <main>
-    <h1 class="text-2xl font-semibold">Applications</h1>
+    <div class="flex flex-wrap items-center justify-between gap-4">
+        <h1 class="text-2xl font-semibold">Applications</h1>
+        <a class="rounded bg-gray-900 px-4 py-2 text-sm text-white hover:bg-gray-700" th:href="@{/applications/new}">Add application</a>
+    </div>
 
-    <!--/* TODO: status filter links ("All" plus one per ApplicationStatus) that reload the list with ?status= */-->
+    <nav class="mt-4 flex flex-wrap gap-2 text-sm" aria-label="Filter by status">
+        <a class="rounded-full border px-3 py-1" th:href="@{/applications}"
+           th:classappend="${selectedStatus == null} ? 'border-gray-900 bg-gray-900 text-white' : 'border-gray-300 bg-white hover:bg-gray-100'">All</a>
+        <a th:each="status : ${statuses}" class="rounded-full border px-3 py-1"
+           th:href="@{/applications(status=${status})}"
+           th:classappend="${status == selectedStatus} ? 'border-gray-900 bg-gray-900 text-white' : 'border-gray-300 bg-white hover:bg-gray-100'">
+            <th:block th:replace="~{applications/fragments :: label(${status})}">Applied</th:block>
+        </a>
+    </nav>
 
-    <!--/* TODO: one row per application (title, company, location, status, captured date) linking to its detail page */-->
-    <p class="mt-6 text-gray-500">No applications yet. Save a job posting with the browser extension to see it here.</p>
+    <p class="mt-6 text-gray-500" th:if="${#lists.isEmpty(applications)}"
+       th:text="${selectedStatus == null} ? 'No applications yet. Save a job posting with the browser extension, or add one by hand.' : 'No applications with this status.'">
+        No applications yet. Save a job posting with the browser extension, or add one by hand.</p>
+
+    <div class="mt-6 overflow-x-auto rounded border border-gray-200 bg-white" th:unless="${#lists.isEmpty(applications)}">
+        <table class="w-full text-left text-sm">
+            <thead class="bg-gray-50 text-gray-500">
+            <tr>
+                <th class="px-4 py-2 font-medium">Title</th>
+                <th class="px-4 py-2 font-medium">Company</th>
+                <th class="px-4 py-2 font-medium">Location</th>
+                <th class="px-4 py-2 font-medium">Status</th>
+                <th class="px-4 py-2 font-medium">Added</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr class="border-t border-gray-200" th:each="jobApplication : ${applications}">
+                <td class="px-4 py-2">
+                    <a class="font-medium hover:underline" th:href="@{/applications/{id}(id=${jobApplication.id})}"
+                       th:text="${jobApplication.title}">Backend engineer</a>
+                </td>
+                <td class="px-4 py-2" th:text="${jobApplication.company} ?: '–'">Acme</td>
+                <td class="px-4 py-2" th:text="${jobApplication.location} ?: '–'">Remote</td>
+                <td class="px-4 py-2"><th:block th:replace="~{applications/fragments :: status-badge(${jobApplication.status})}">Applied</th:block></td>
+                <td class="px-4 py-2 text-gray-500" th:text="${#temporals.format(jobApplication.capturedAt, 'd MMM yyyy')}">28 Sep 2026</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </main>
 </body>
 </html>

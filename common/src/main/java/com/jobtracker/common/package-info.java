@@ -1,5 +1,5 @@
 /**
- * Common: code every module shares, currently error codes and the application logger.
+ * Common: code every module shares, currently error codes, base exceptions and the application logger.
  * Owns no tables, has no Spring beans and depends on no other module.
  * <p>
  * Public API: the {@code exception} and {@code logging} packages, marked with {@code @NamedInterface}.

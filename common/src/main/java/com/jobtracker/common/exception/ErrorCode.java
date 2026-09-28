@@ -9,6 +9,11 @@ package com.jobtracker.common.exception;
 public interface ErrorCode {
 
 	/**
+	 * What the code is called in structured (JSON) logs and in error responses, so the two can be matched up.
+	 */
+	String PROPERTY_NAME = "errorCode";
+
+	/**
 	 * @return the module's prefix and a number, e.g. {@code JOBS-001}. Once a code is in use, never change or reuse it:
 	 * people search the logs for it.
 	 */

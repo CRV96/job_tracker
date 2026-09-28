@@ -1,0 +1,9 @@
+{
+  "properties": [
+    {
+      "name": "jobtracker.capture.path",
+      "type": "java.lang.String",
+      "description": "Path the browser extension posts captured job postings to. The extension has to use the same path."
+    }
+  ]
+}

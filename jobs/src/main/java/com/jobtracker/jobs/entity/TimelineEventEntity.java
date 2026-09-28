@@ -50,7 +50,8 @@ public class TimelineEventEntity {
 	@CreationTimestamp
 	private Instant createdAt;
 
-	public TimelineEventEntity(ApplicationEntity application, NewTimelineEvent event) {
+	// Only ApplicationEntity.addEvent creates events, so the application's status always follows its timeline
+	TimelineEventEntity(ApplicationEntity application, NewTimelineEvent event) {
 		this.application = application;
 		this.eventDate = event.eventDate();
 		this.stageCategory = event.stageCategory();

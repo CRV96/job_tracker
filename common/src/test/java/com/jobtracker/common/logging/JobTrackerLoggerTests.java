@@ -16,9 +16,9 @@ import org.slf4j.LoggerFactory;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @CustomLog
-class AppLoggerTests {
+class JobTrackerLoggerTests {
 
-	private final Logger logback = (Logger) LoggerFactory.getLogger(AppLoggerTests.class);
+	private final Logger logback = (Logger) LoggerFactory.getLogger(JobTrackerLoggerTests.class);
 
 	private final ListAppender<ILoggingEvent> appender = new ListAppender<>() {
 
@@ -49,7 +49,7 @@ class AppLoggerTests {
 		log.info("Profile {} selected", 7);
 
 		ILoggingEvent event = loggedEvent();
-		assertThat(event.getLoggerName()).isEqualTo(AppLoggerTests.class.getName());
+		assertThat(event.getLoggerName()).isEqualTo(JobTrackerLoggerTests.class.getName());
 		assertThat(event.getLevel()).isEqualTo(Level.INFO);
 		assertThat(event.getFormattedMessage()).isEqualTo("Profile 7 selected");
 		assertThat(event.getKeyValuePairs()).isNullOrEmpty();
@@ -83,7 +83,7 @@ class AppLoggerTests {
 		log.warn("Something looks off");
 
 		StackTraceElement caller = loggedEvent().getCallerData()[0];
-		assertThat(caller.getClassName()).isEqualTo(AppLoggerTests.class.getName());
+		assertThat(caller.getClassName()).isEqualTo(JobTrackerLoggerTests.class.getName());
 		assertThat(caller.getMethodName()).isEqualTo("reportsTheClassUsingItAsTheCaller");
 	}
 

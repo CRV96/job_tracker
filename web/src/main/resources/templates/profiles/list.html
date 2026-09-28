@@ -8,12 +8,29 @@
 <main>
     <h1 class="text-2xl font-semibold">Who's using Job Tracker?</h1>
 
-    <!--/* TODO: one button per profile that POSTs to /profiles/{id}/select */-->
+    <p class="mt-2 text-gray-500" th:if="${#lists.isEmpty(profiles)}">No profiles yet. Create one to start tracking jobs.</p>
+
+    <ul class="mt-6 flex flex-wrap gap-3" th:unless="${#lists.isEmpty(profiles)}">
+        <li th:each="profile : ${profiles}">
+            <form method="post" th:action="@{/profiles/{id}/select(id=${profile.id})}">
+                <button class="rounded border px-4 py-2 hover:bg-gray-100" type="submit"
+                        th:classappend="${currentProfile != null and currentProfile.id == profile.id} ? 'border-gray-900 bg-white font-semibold' : 'border-gray-300 bg-white'"
+                        th:text="${profile.name}">Robert</button>
+            </form>
+        </li>
+    </ul>
+
+    <p class="mt-4 text-sm text-gray-500" th:if="${currentProfile}">
+        Your profile id is <strong class="text-gray-900" th:text="${currentProfile.id}">1</strong>.
+        The browser extension asks for it on its options page.
+    </p>
 
     <form class="mt-8 flex gap-2" method="post" th:action="@{/profiles}">
-        <input class="rounded border px-3 py-2" type="text" name="name" placeholder="New profile name" required>
+        <input class="rounded border px-3 py-2" type="text" name="name" placeholder="New profile name" maxlength="100" required
+               th:value="${name}" aria-label="New profile name">
         <button class="rounded bg-gray-900 px-4 py-2 text-white" type="submit">Create profile</button>
     </form>
+    <p class="mt-2 text-sm text-red-600" th:if="${nameError}" th:text="${nameError}">A profile named Robert already exists</p>
 </main>
 </body>
 </html>

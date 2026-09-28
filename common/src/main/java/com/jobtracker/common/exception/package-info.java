@@ -1,5 +1,6 @@
 /**
- * Error codes shared by every module. Part of the module's public API.
+ * The {@link com.jobtracker.common.exception.ErrorCode} interface and the base exceptions every module's exceptions
+ * extend. Part of the module's public API.
  */
 @NamedInterface("exception")
 package com.jobtracker.common.exception;

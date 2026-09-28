@@ -30,15 +30,16 @@ Open `chrome://extensions`, turn on Developer mode, click **Load unpacked** and 
 
 ## Project structure
 
-A modular monolith: one Spring Boot application split into Maven modules. The domain modules hold the business logic and know nothing about the web. Two adapter modules expose them: `web` to the browser, `capture` to the extension.
+A modular monolith: one Spring Boot application split into Maven modules. The domain modules hold the business logic and know nothing about the web. Two adapter modules expose them: `web` to the browser, `capture` to the extension. `common` holds the little code they all share.
 
 | Module | Responsibility | Depends on |
 |---|---|---|
-| `identity` | Domain: local profiles (`users` table) | none |
-| `jobs` | Domain: jobs saved as favorites or applied to, with each application's status and event timeline | none |
+| `common` | Shared: error codes (`ErrorCode`) and the application logger (`AppLogger`). No beans, no tables, no business logic | none |
+| `identity` | Domain: local profiles (`users` table) | `common` |
+| `jobs` | Domain: jobs saved as favorites or applied to, with each application's status and event timeline | `common` |
 | `search` | Domain: Boolean job-search query generator; stateless | none |
-| `web` | Adapter: browser UI. Page controllers, templates, shared layout, Tailwind and HTMX | `identity`, `jobs`, `search` |
-| `capture` | Adapter: REST endpoint for the browser extension | `identity`, `jobs` |
+| `web` | Adapter: browser UI. Page controllers, templates, shared layout, Tailwind and HTMX | `common`, `identity`, `jobs`, `search` |
+| `capture` | Adapter: REST endpoint for the browser extension | `common`, `identity`, `jobs` |
 | `app` | Runnable application and config; wires the modules together | all |
 | `extension/` | Chrome extension (Manifest V3, plain JavaScript); not a Maven module | the `capture` API |
 
@@ -53,11 +54,12 @@ Every module groups its classes by type, with the same package names everywhere:
 | `entity` | JPA entities | domain modules |
 | `repository` | Spring Data repositories | domain modules |
 | `mapper` | Entity → DTO conversion (`*Mapper`, static methods) | domain modules |
-| `exception` | Exceptions the service throws, e.g. `ApplicationNotFoundException` | domain modules |
+| `exception` | Exceptions the service throws, e.g. `ApplicationNotFoundException`; in `common`, the `ErrorCode` interface | domain modules, `common` |
+| `logging` | `AppLogger` | `common` |
 | `controller` | Controllers and their exception handlers | `web`, `capture` |
 | `constants`, `user` | Route paths; `CurrentUser` | `web` |
 
-In the domain modules, `dto`, `enums`, `service` and `exception` are the public API. Each is marked `@NamedInterface` in its `package-info.java`, which tells Spring Modulith that other modules may use it. `service` uses `propagate = false`, so `service.impl` stays internal, as do `entity` and `repository`.
+In the domain modules, `dto`, `enums`, `service` and `exception` are the public API. Each is marked `@NamedInterface` in its `package-info.java`, which tells Spring Modulith that other modules may use it. `service` uses `propagate = false`, so `service.impl` stays internal, as do `entity` and `repository`. In `common`, `exception` and `logging` are marked the same way.
 
 Conventions:
 
@@ -69,6 +71,7 @@ Conventions:
   - Services throw the module's own exceptions, such as `ApplicationNotFoundException`.
   - In `web`, `WebExceptionHandler` turns them into an HTTP status, and every error page renders with [error.html](web/src/main/resources/templates/error.html) inside the layout.
   - In `capture`, `CaptureExceptionHandler` returns [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457) problem details (JSON) for the extension.
+- **Logging:** put Lombok's `@CustomLog` on a class (not `@Slf4j`) to get a `log` field of type `AppLogger`, set up in [lombok.config](lombok.config). It's SLF4J with an extra first argument for errors that have a code: `log.error(JobsErrorCode.SAVE_FAILED, "Could not save application {}", id, exception)`. The code is added to the message and as a separate `errorCode` field. Each module defines its codes as an enum implementing `ErrorCode` in its `exception` package, prefixed with the module's name (`JOBS-001`).
 - **Formatting:** [.editorconfig](.editorconfig) sets tabs for Java and XML plus the import order. In IntelliJ, *Code → Reformat Code* with *Optimize imports* applies it.
 
 Templates live in `web/src/main/resources/templates/<feature>/`, and all pages share [layout.html](web/src/main/resources/templates/layout.html).
@@ -86,7 +89,7 @@ Rules:
 
 | Test | Where | Example |
 |---|---|---|
-| Unit tests (plain JUnit + Mockito) | the module itself | none yet |
+| Unit tests (plain JUnit + Mockito) | the module itself | [AppLoggerTests](common/src/test/java/com/jobtracker/common/logging/AppLoggerTests.java) |
 | Controller tests (`@WebMvcTest`) | `web` and `capture`, next to the controller | [HomeControllerTests](web/src/test/java/com/jobtracker/web/controller/HomeControllerTests.java), [CaptureControllerTests](capture/src/test/java/com/jobtracker/capture/controller/CaptureControllerTests.java) |
 | Service tests against a real database (`@ApplicationModuleTest`) | `app`, in the module's package, e.g. `app/src/test/java/com/jobtracker/jobs/` | [JobsModuleTests](app/src/test/java/com/jobtracker/jobs/JobsModuleTests.java) |
 | Whole application and module boundaries | `app` | [ModularityTests](app/src/test/java/com/jobtracker/ModularityTests.java) |

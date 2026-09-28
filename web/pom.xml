@@ -20,6 +20,10 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.jobtracker</groupId>
+			<artifactId>job-tracker-common</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.jobtracker</groupId>
 			<artifactId>job-tracker-identity</artifactId>
 		</dependency>
 		<dependency>

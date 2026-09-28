@@ -14,6 +14,10 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.jobtracker</groupId>
+			<artifactId>job-tracker-common</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.jobtracker</groupId>
 			<artifactId>job-tracker-jobs</artifactId>
 		</dependency>
 		<dependency>

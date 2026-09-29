@@ -2,13 +2,13 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org"
       th:replace="~{layout :: page(~{::title}, ~{::main})}">
 <head>
-    <title>Profiles · Job Tracker</title>
+    <title th:text="|#{profiles.title} · JobWarden|">Profiles · JobWarden</title>
 </head>
 <body>
 <main>
-    <h1 class="text-2xl font-semibold">Who's using Job Tracker?</h1>
+    <h1 class="text-2xl font-semibold" th:text="#{profiles.heading}">Who’s using JobWarden?</h1>
 
-    <p class="mt-2 text-gray-500" th:if="${#lists.isEmpty(profiles)}">No profiles yet. Create one to start tracking jobs.</p>
+    <p class="mt-2 text-gray-500" th:if="${#lists.isEmpty(profiles)}" th:text="#{profiles.empty}">No profiles yet. Create one to start tracking jobs.</p>
 
     <ul class="mt-6 flex flex-wrap gap-3" th:unless="${#lists.isEmpty(profiles)}">
         <li th:each="profile : ${profiles}">
@@ -20,17 +20,17 @@
         </li>
     </ul>
 
-    <p class="mt-4 text-sm text-gray-500" th:if="${currentProfile}">
-        Your profile id is <strong class="text-gray-900" th:text="${currentProfile.id}">1</strong>.
-        The browser extension asks for it on its options page.
-    </p>
+    <!--/* The id as text, so it shows 1000 and not 1,000 */-->
+    <p class="mt-4 text-sm text-gray-500" th:if="${currentProfile}"
+       th:text="#{profiles.idHint(${#strings.toString(currentProfile.id)})}">
+        Your profile id is 1. The browser extension asks for it on its options page.</p>
 
     <form class="mt-8 flex gap-2" method="post" th:action="@{/profiles}">
-        <input class="rounded border px-3 py-2" type="text" name="name" placeholder="New profile name" maxlength="100" required
-               th:value="${name}" aria-label="New profile name">
-        <button class="rounded bg-gray-900 px-4 py-2 text-white" type="submit">Create profile</button>
+        <input class="rounded border px-3 py-2" type="text" name="name" maxlength="100" required th:value="${name}"
+               th:placeholder="#{profiles.newName}" th:aria-label="#{profiles.newName}">
+        <button class="rounded bg-gray-900 px-4 py-2 text-white" type="submit" th:text="#{profiles.create}">Create profile</button>
     </form>
-    <p class="mt-2 text-sm text-red-600" th:if="${nameError}" th:text="${nameError}">A profile named Robert already exists</p>
+    <p class="mt-2 text-sm text-red-600" th:if="${nameError}" th:text="${nameError}">A profile named Robert already exists.</p>
 </main>
 </body>
 </html>

@@ -1,4 +1,6 @@
-# Job Tracker Application
+# JobWarden
+
+The keeper of your job hunt: save job postings from the browser in one click, and keep every application's story, from the first save to the offer.
 
 [![Build](https://github.com/CRV96/job_tracker/actions/workflows/build.yml/badge.svg)](https://github.com/CRV96/job_tracker/actions/workflows/build.yml)
 
@@ -26,7 +28,7 @@ Pages are server-rendered with Thymeleaf; HTMX handles partial updates without a
 
 ### Browser extension
 
-Open `chrome://extensions`, turn on Developer mode, click **Load unpacked** and pick the `extension/` folder. Set the server URL and your profile id on the extension's options page; the Profiles page shows your id. The extension posts to `/api/captures`, set by `jobtracker.capture.path` in [application.properties](app/src/main/resources/application.properties); if you change it, change the extension too. Saving a posting you already saved doesn't create a duplicate, and saving a favorite marks it applied.
+Open `chrome://extensions`, turn on Developer mode, click **Load unpacked** and pick the `extension/` folder. Set the server URL and your profile id on the extension's options page; the Profiles page shows your id. The extension posts to `/api/captures`, set by `jobwarden.capture.path` in [application.properties](app/src/main/resources/application.properties); if you change it, change the extension too. Saving a posting you already saved doesn't create a duplicate, and clicking I applied on a posting you bookmarked marks it applied.
 
 ## Project structure
 
@@ -34,9 +36,9 @@ A modular monolith: one Spring Boot application split into Maven modules. The do
 
 | Module | Responsibility | Depends on |
 |---|---|---|
-| `common` | Shared: `ErrorCode`, the base exceptions and the application logger (`JobTrackerLogger`). No beans, no tables, no business logic | none |
+| `common` | Shared: `ErrorCode`, the base exceptions and the application logger (`JobWardenLogger`). No beans, no tables, no business logic | none |
 | `identity` | Domain: local profiles (`users` table) | `common` |
-| `jobs` | Domain: jobs saved as favorites or applied to, with each application's status and event timeline | `common` |
+| `jobs` | Domain: jobs bookmarked or applied to, with each application's status and event timeline | `common` |
 | `search` | Domain: Boolean job-search query generator; stateless | none |
 | `web` | Adapter: browser UI. Page controllers, templates, shared layout, Tailwind and HTMX | `common`, `identity`, `jobs`, `search` |
 | `capture` | Adapter: REST endpoint for the browser extension | `common`, `identity`, `jobs` |
@@ -48,16 +50,17 @@ Every module groups its classes by type, with the same package names everywhere:
 | Package | Holds | Where |
 |---|---|---|
 | `dto` | Records that carry data: service inputs and outputs, form objects, REST request and response bodies | all modules |
-| `enums` | Enums | `jobs`, `capture` |
+| `enums` | Enums, e.g. `ApplicationStatus`, `IdentityErrorCode`, `Language` | `jobs`, `identity`, `capture`, `web` |
 | `service` | Service interfaces | domain modules |
 | `service.impl` | Service implementations (`Default*Service`) | domain modules |
 | `entity` | JPA entities | domain modules |
 | `repository` | Spring Data repositories | domain modules |
 | `mapper` | Entity → DTO conversion (`*Mapper`, static methods) | domain modules |
 | `exception` | Exceptions the service throws, e.g. `ApplicationNotFoundException`, and the module's error codes, e.g. `JobsErrorCode`; in `common`, `ErrorCode`, `CommonErrorCode` and the base exceptions | domain modules, `common` |
-| `logging` | `JobTrackerLogger` | `common` |
+| `logging` | `JobWardenLogger` | `common` |
 | `controller` | Controllers and their exception handlers | `web`, `capture` |
 | `constants`, `user` | Route paths; `CurrentUser` | `web` |
+| `config` | Spring configuration, e.g. `LocaleConfiguration` | `web` |
 
 In the domain modules, `dto`, `enums`, `service` and `exception` are the public API. Each is marked `@NamedInterface` in its `package-info.java`, which tells Spring Modulith that other modules may use it. `service` uses `propagate = false`, so `service.impl` stays internal, as do `entity` and `repository`. In `common`, `exception` and `logging` are marked the same way.
 
@@ -75,9 +78,9 @@ Conventions:
   - Any other exception is unexpected: a bug or an outage. The handlers log it at ERROR with `COMMON-001` and its stack trace, and answer 500 without internal details. Spring MVC's own errors, such as text where a number was expected, keep their usual 4xx status.
   - In `web`, `WebExceptionHandler` turns them into an HTTP status, and every error page renders with [error.html](web/src/main/resources/templates/error.html) inside the layout.
   - In `capture`, `CaptureExceptionHandler` returns [RFC 9457](https://www.rfc-editor.org/rfc/rfc9457) problem details (JSON) for the extension, with the code in an `errorCode` field. Every error carries a code, Spring MVC's own ones too: `COMMON-002` for a malformed request, and validation errors add an `errors` object (field → message).
-- **Logging:** put Lombok's `@CustomLog` on a class (not `@Slf4j`) to get a `log` field of type `JobTrackerLogger`, set up in [lombok.config](lombok.config). `debug`, `info` and `warn` are plain SLF4J. `error` also takes an error code as its first argument, and needs one: `log.error(JobsErrorCode.SAVE_FAILED, "Could not save application {}", id, exception)`. The code is added to the message and as a separate `errorCode` field. Each module defines its codes as an enum implementing `ErrorCode` in its `exception` package, prefixed with the module's name (`JOBS-001`). Levels:
+- **Logging:** put Lombok's `@CustomLog` on a class (not `@Slf4j`) to get a `log` field of type `JobWardenLogger`, set up in [lombok.config](lombok.config). `debug`, `info` and `warn` are plain SLF4J. `error` also takes an error code as its first argument, and needs one: `log.error(JobsErrorCode.SAVE_FAILED, "Could not save application {}", id, exception)`. The code is added to the message and as a separate `errorCode` field. Each module defines its codes as an enum implementing `ErrorCode` in its `exception` package, prefixed with the module's name (`JOBS-001`). Levels:
   - **INFO:** what changes (created, moved to another status, deleted).
-  - **DEBUG:** reads, rejected forms and captures. Turn it on with `logging.level.com.jobtracker=DEBUG`; the line is ready in `application.properties`.
+  - **DEBUG:** reads, rejected forms and captures. Turn it on with `logging.level.com.jobwarden=DEBUG`; the line is ready in `application.properties`.
   - **WARN:** the modules' own exceptions, logged once by the exception handlers.
   - **ERROR:** only unexpected failures, always with a code.
 
@@ -91,6 +94,7 @@ Conventions:
   - `web`'s `AppConstants` holds the routes, template names, model attribute names and HTMX headers.
   - A form's length limits are constants on the form record (e.g. `NewEventForm.STAGE_LABEL_MAX_LENGTH`), and its validation messages use `{max}`.
   - `ErrorCode.PROPERTY_NAME` is the one name for the error code, in logs and in error responses.
+- **Dates and times:** a timeline event has a date, and a time of day only when it's known (`LocalDate` + `LocalTime`; `DATE` + `TIME` columns). Within a day, events without a time come first. They're wall-clock values, as entered; "now" is taken in the server's time zone, so set `TZ` when running in Docker (which defaults to UTC). Moments that are only ever recorded, like `capturedAt`, are instants (`Instant`, `TIMESTAMPTZ`). The forms have a date field and an optional time field with a Clear time button (a time emptied only in part is invalid, and the browser won't send the form); a form that sends no date, like the status buttons, means now, with the time. The capture API adds the time too, unless the request says `"includeTime": false`. Display patterns are the `format.date` and `format.dateTime` messages, so each language has its own.
 - **Entities guard their own rules:** `ApplicationEntity.getEvents()` is read-only and `TimelineEventEntity`'s constructor is package-private, so events can only be added through `addEvent`, which keeps the status in step with the timeline.
 - **Formatting:** [.editorconfig](.editorconfig) sets tabs for Java and XML plus the import order. In IntelliJ, *Code → Reformat Code* with *Optimize imports* applies it.
 
@@ -100,8 +104,21 @@ Rules:
 
 - A module's public API is its root package plus the packages marked `@NamedInterface`. Everything else is private to that module. Other modules never touch another module's entities or repositories.
 - Domain modules never depend on the adapters. Business logic belongs in a domain module, never in a controller.
-- [ModularityTests](app/src/test/java/com/jobtracker/ModularityTests.java) (Spring Modulith) fails the build if a module uses another module's internals or if module dependencies form a cycle.
+- [ModularityTests](app/src/test/java/com/jobwarden/ModularityTests.java) (Spring Modulith) fails the build if a module uses another module's internals or if module dependencies form a cycle.
 - Each module keeps its own Flyway migrations in `src/main/resources/db/migration`, named `V<n>__<module>_<description>.sql`. Version numbers are shared by all modules: a new migration takes the next free number across the whole project, not just its own module. Hibernate only validates the schema; it never changes it.
+
+## Languages
+
+The pages are in English, Romanian, French, German, Polish, Spanish and Portuguese (`Language` in `web`).
+
+- **Which language:** the one picked in the header (remembered in a cookie for a year), otherwise the browser's preferred language if the app has it, otherwise English. The capture API answers in the language of the request's `Accept-Language` header, which the extension sends like any browser request.
+- **Where the texts live:** `web/src/main/resources/i18n/web.properties` (pages, form validation, status and rejection reason names), and each module's error messages next to its code in `<module>/src/main/resources/i18n/<module>-errors.properties`, under `error.<code>` (e.g. `error.JOBS-001`). Each has one file per language, e.g. `web_ro.properties`. English is the file without a suffix, and the fallback for everything.
+- **In templates:** `th:text="#{applications.title}"`; with arguments `#{application.added(${date})}`; an enum value `#{${'status.' + status}}`. Validation messages refer to a key: `@NotBlank(message = "{validation.profile.name.required}")`. The modules' exceptions carry arguments for their message's `{0}`, `{1}`...
+- **Adding a text:** add the key to the English file and to every translation. [MessageBundlesTests](app/src/test/java/com/jobwarden/MessageBundlesTests.java) fails if a translation is missing a key, or if an error code has no message.
+- **Adding a language:** a constant in `Language`, and a file per bundle.
+- **Adding a module with error codes:** its `i18n/<module>-errors` files, plus the bundle in `spring.messages.basename` (application.properties) and in `MessageBundlesTests`.
+- **Apostrophes:** write `’`, not `'`. In a message with `{0}`, Java's `MessageFormat` treats `'` as a quote character and swallows text.
+- **Logs stay in English:** they're for whoever runs the app, not for users.
 
 ## Testing
 
@@ -109,10 +126,10 @@ Rules:
 
 | Test | Where | Example |
 |---|---|---|
-| Unit tests (plain JUnit + Mockito) | the module itself | [JobTrackerLoggerTests](common/src/test/java/com/jobtracker/common/logging/JobTrackerLoggerTests.java), [CurrentUserTests](web/src/test/java/com/jobtracker/web/user/CurrentUserTests.java) |
-| Controller tests (`@WebMvcTest`) | `web` and `capture`, next to the controller | [ApplicationControllerTests](web/src/test/java/com/jobtracker/web/controller/ApplicationControllerTests.java), [CaptureControllerTests](capture/src/test/java/com/jobtracker/capture/controller/CaptureControllerTests.java), [CaptureExceptionHandlerTests](capture/src/test/java/com/jobtracker/capture/controller/CaptureExceptionHandlerTests.java) |
-| Service tests against a real database (`@ApplicationModuleTest`) | `app`, in the module's package, e.g. `app/src/test/java/com/jobtracker/jobs/` | [ApplicationServiceTests](app/src/test/java/com/jobtracker/jobs/ApplicationServiceTests.java) |
-| Whole application and module boundaries | `app` | [ModularityTests](app/src/test/java/com/jobtracker/ModularityTests.java) |
+| Unit tests (plain JUnit + Mockito) | the module itself | [JobWardenLoggerTests](common/src/test/java/com/jobwarden/common/logging/JobWardenLoggerTests.java), [CurrentUserTests](web/src/test/java/com/jobwarden/web/user/CurrentUserTests.java) |
+| Controller tests (`@WebMvcTest`) | `web` and `capture`, next to the controller | [ApplicationControllerTests](web/src/test/java/com/jobwarden/web/controller/ApplicationControllerTests.java), [CaptureControllerTests](capture/src/test/java/com/jobwarden/capture/controller/CaptureControllerTests.java), [CaptureExceptionHandlerTests](capture/src/test/java/com/jobwarden/capture/controller/CaptureExceptionHandlerTests.java) |
+| Service tests against a real database (`@ApplicationModuleTest`) | `app`, in the module's package, e.g. `app/src/test/java/com/jobwarden/jobs/` | [ApplicationServiceTests](app/src/test/java/com/jobwarden/jobs/ApplicationServiceTests.java) |
+| Whole application and module boundaries | `app` | [ModularityTests](app/src/test/java/com/jobwarden/ModularityTests.java) |
 
 Why database tests live in `app`: the migrations only run there, and `jobs`' tables reference `identity`'s. `@ApplicationModuleTest` still starts just the one module, which also proves the module doesn't depend on other modules' beans.
 

@@ -3,26 +3,26 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>com.jobtracker</groupId>
-		<artifactId>job-tracker</artifactId>
+		<groupId>com.jobwarden</groupId>
+		<artifactId>jobwarden</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>job-tracker-capture</artifactId>
-	<name>Job Tracker :: Capture</name>
+	<artifactId>jobwarden-capture</artifactId>
+	<name>JobWarden :: Capture</name>
 	<description>REST endpoint the browser extension sends captured job postings to</description>
 
 	<dependencies>
 		<dependency>
-			<groupId>com.jobtracker</groupId>
-			<artifactId>job-tracker-common</artifactId>
+			<groupId>com.jobwarden</groupId>
+			<artifactId>jobwarden-common</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.jobtracker</groupId>
-			<artifactId>job-tracker-jobs</artifactId>
+			<groupId>com.jobwarden</groupId>
+			<artifactId>jobwarden-jobs</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.jobtracker</groupId>
-			<artifactId>job-tracker-identity</artifactId>
+			<groupId>com.jobwarden</groupId>
+			<artifactId>jobwarden-identity</artifactId>
 		</dependency>
 
 		<dependency>

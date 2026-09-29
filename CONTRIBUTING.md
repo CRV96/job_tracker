@@ -1,8 +1,8 @@
 # Contributing
 
-Thanks for your interest in Job Tracker!
+Thanks for your interest in JobWarden!
 
-Job Tracker is source-available software owned by Robert-Vasile Ciapă and released under the [PolyForm Shield License 1.0.0](LICENSE.md). Contributions are welcome, but the project owner must stay free to license, relicense and sell the project. For that reason, **every contribution requires agreeing to the [Contributor License Agreement](#contributor-license-agreement) below before it can be merged.**
+JobWarden is source-available software owned by Robert-Vasile Ciapă and released under the [PolyForm Shield License 1.0.0](LICENSE.md). Contributions are welcome, but the project owner must stay free to license, relicense and sell the project. For that reason, **every contribution requires agreeing to the [Contributor License Agreement](#contributor-license-agreement) below before it can be merged.**
 
 ## How to contribute
 
@@ -22,7 +22,7 @@ Pull requests from contributors who have not signed the CLA will not be merged.
 
 _Version 1.0_
 
-This Contributor License Agreement ("Agreement") is between you and Robert-Vasile Ciapă, together with any successors and assigns (the "Owner"). It applies to every Contribution you submit to the Job Tracker project (the "Project", <https://github.com/CRV96/job_tracker>).
+This Contributor License Agreement ("Agreement") is between you and Robert-Vasile Ciapă, together with any successors and assigns (the "Owner"). It applies to every Contribution you submit to the JobWarden project (the "Project", <https://github.com/CRV96/job_tracker>).
 
 ### 1. Definitions
 

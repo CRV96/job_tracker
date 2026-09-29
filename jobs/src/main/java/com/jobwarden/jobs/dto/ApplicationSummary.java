@@ -1,0 +1,20 @@
+package com.jobwarden.jobs.dto;
+
+import java.time.Instant;
+
+import com.jobwarden.jobs.enums.ApplicationStatus;
+import lombok.Builder;
+import org.jspecify.annotations.Nullable;
+
+/**
+ * One row of the application list.
+ */
+@Builder
+public record ApplicationSummary(
+		long id,
+		String title,
+		@Nullable String company,
+		@Nullable String location,
+		ApplicationStatus status,
+		Instant capturedAt) {
+}

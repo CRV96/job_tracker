@@ -8,11 +8,11 @@
 		<version>4.1.1</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.jobtracker</groupId>
-	<artifactId>job-tracker</artifactId>
+	<groupId>com.jobwarden</groupId>
+	<artifactId>jobwarden</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	<name>Job Tracker</name>
+	<name>JobWarden</name>
 	<description>Personal job application tracker with a browser extension for one-click capture</description>
 	<url/>
 	<licenses>
@@ -51,33 +51,33 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
-				<groupId>com.jobtracker</groupId>
-				<artifactId>job-tracker-common</artifactId>
+				<groupId>com.jobwarden</groupId>
+				<artifactId>jobwarden-common</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.jobtracker</groupId>
-				<artifactId>job-tracker-identity</artifactId>
+				<groupId>com.jobwarden</groupId>
+				<artifactId>jobwarden-identity</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.jobtracker</groupId>
-				<artifactId>job-tracker-jobs</artifactId>
+				<groupId>com.jobwarden</groupId>
+				<artifactId>jobwarden-jobs</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.jobtracker</groupId>
-				<artifactId>job-tracker-search</artifactId>
+				<groupId>com.jobwarden</groupId>
+				<artifactId>jobwarden-search</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.jobtracker</groupId>
-				<artifactId>job-tracker-capture</artifactId>
+				<groupId>com.jobwarden</groupId>
+				<artifactId>jobwarden-capture</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.jobtracker</groupId>
-				<artifactId>job-tracker-web</artifactId>
+				<groupId>com.jobwarden</groupId>
+				<artifactId>jobwarden-web</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>

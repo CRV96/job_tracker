@@ -3,12 +3,12 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>com.jobtracker</groupId>
-		<artifactId>job-tracker</artifactId>
+		<groupId>com.jobwarden</groupId>
+		<artifactId>jobwarden</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>job-tracker-app</artifactId>
-	<name>Job Tracker :: App</name>
+	<artifactId>jobwarden-app</artifactId>
+	<name>JobWarden :: App</name>
 	<description>Runnable Spring Boot application that wires all modules together</description>
 
 	<properties>
@@ -17,24 +17,24 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>com.jobtracker</groupId>
-			<artifactId>job-tracker-identity</artifactId>
+			<groupId>com.jobwarden</groupId>
+			<artifactId>jobwarden-identity</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.jobtracker</groupId>
-			<artifactId>job-tracker-jobs</artifactId>
+			<groupId>com.jobwarden</groupId>
+			<artifactId>jobwarden-jobs</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.jobtracker</groupId>
-			<artifactId>job-tracker-search</artifactId>
+			<groupId>com.jobwarden</groupId>
+			<artifactId>jobwarden-search</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.jobtracker</groupId>
-			<artifactId>job-tracker-capture</artifactId>
+			<groupId>com.jobwarden</groupId>
+			<artifactId>jobwarden-capture</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.jobtracker</groupId>
-			<artifactId>job-tracker-web</artifactId>
+			<groupId>com.jobwarden</groupId>
+			<artifactId>jobwarden-web</artifactId>
 		</dependency>
 
 		<dependency>

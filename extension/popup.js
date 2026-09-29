@@ -10,7 +10,7 @@ async function extractFromActiveTab() {
   return injection.result;
 }
 
-/** @param {'SAVE' | 'FAVORITE'} action */
+/** @param {'APPLY' | 'BOOKMARK'} action */
 async function capture(action, job) {
   const { serverUrl = DEFAULT_SERVER_URL, userId } = await chrome.storage.sync.get(['serverUrl', 'userId']);
   // TODO: POST { userId, action, ...job } as JSON to `${serverUrl}/api/captures`, then show
@@ -21,5 +21,5 @@ async function capture(action, job) {
 const job = await extractFromActiveTab();
 // TODO: show the extracted fields in #preview so the user can check them before saving
 
-document.getElementById('save').addEventListener('click', () => capture('SAVE', job));
-document.getElementById('favorite').addEventListener('click', () => capture('FAVORITE', job));
+document.getElementById('apply').addEventListener('click', () => capture('APPLY', job));
+document.getElementById('bookmark').addEventListener('click', () => capture('BOOKMARK', job));

@@ -3,18 +3,18 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>com.jobtracker</groupId>
-		<artifactId>job-tracker</artifactId>
+		<groupId>com.jobwarden</groupId>
+		<artifactId>jobwarden</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>job-tracker-jobs</artifactId>
-	<name>Job Tracker :: Jobs</name>
+	<artifactId>jobwarden-jobs</artifactId>
+	<name>JobWarden :: Jobs</name>
 	<description>Jobs you saved or applied to, with the status and timeline of each</description>
 
 	<dependencies>
 		<dependency>
-			<groupId>com.jobtracker</groupId>
-			<artifactId>job-tracker-common</artifactId>
+			<groupId>com.jobwarden</groupId>
+			<artifactId>jobwarden-common</artifactId>
 		</dependency>
 
 		<dependency>

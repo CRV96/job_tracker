@@ -3,18 +3,18 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>com.jobtracker</groupId>
-		<artifactId>job-tracker</artifactId>
+		<groupId>com.jobwarden</groupId>
+		<artifactId>jobwarden</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>job-tracker-identity</artifactId>
-	<name>Job Tracker :: Identity</name>
+	<artifactId>jobwarden-identity</artifactId>
+	<name>JobWarden :: Identity</name>
 	<description>Local profiles now, user accounts in the hosted version later</description>
 
 	<dependencies>
 		<dependency>
-			<groupId>com.jobtracker</groupId>
-			<artifactId>job-tracker-common</artifactId>
+			<groupId>com.jobwarden</groupId>
+			<artifactId>jobwarden-common</artifactId>
 		</dependency>
 
 		<dependency>
